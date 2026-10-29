@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CATAN · 界面测试夹具</title>
+<style>body{background:#132a38;color:#ead5a8;font:16px system-ui;max-width:720px;margin:50px auto;padding:20px}button{font:inherit;margin:8px;padding:14px;background:#d3ae65;color:#142c3a;border:0;border-radius:7px}p{line-height:1.8}</style>
+<h1>界面测试夹具</h1><p>仅用于独立端口上的浏览器验证。加载会替换当前源的 v3 测试存档，不影响另一个端口。</p>
+<button data-fixture="trade">交易与建设</button><button data-fixture="offer">收到多资源报价</button><button data-fixture="counter">收到还价</button><button data-fixture="roads">掷骰前道路卡</button><button data-fixture="plenty">掷骰前丰收卡</button><button data-fixture="knight">掷骰前骑士卡</button><button data-fixture="discard">所有居民弃牌</button>
+<script type="module">
+import {RES,newGame,isSetup,emptyResources,applyAction,conservation} from '../dist/game.js';
+import {aiTurn} from '../dist/ai.js';
+function ready(){const s=newGame(42,{startPlayer:0});while(isSetup(s))aiTurn(s,s.current);for(const p of s.players)p.resources=emptyResources();s.bank=Object.fromEntries(RES.map(r=>[r,19]));s.phase='build';return s;}
+function give(s,p,cards){for(const[r,n]of Object.entries(cards)){s.bank[r]-=n;s.players[p].resources[r]+=n;}}
+function card(s,type){s.deck.splice(s.deck.indexOf(type),1);s.players[0].dev.push({type,bought:0,id:s.eventId++});s.phase='roll';}
+document.addEventListener('click',e=>{const type=e.target.dataset.fixture;if(!type)return;const s=ready();
+ if(type==='trade'){give(s,0,{wood:8,brick:3,sheep:3,wheat:3,ore:3});give(s,1,{ore:4,wheat:3});}
+ else if(type==='offer'){give(s,0,{wood:3,brick:2});give(s,1,{ore:3,wheat:3});s.current=1;applyAction(s,1,{type:'offer',with:0,give:{ore:1,wheat:1},get:{wood:2,brick:1}});}
+ else if(type==='counter'){give(s,0,{wood:4,brick:3});give(s,1,{ore:3,wheat:3});applyAction(s,0,{type:'offer',with:1,give:{wood:2,brick:1},get:{ore:1,wheat:2}});applyAction(s,1,{type:'counter',give:{wood:3,brick:1},get:{ore:1,wheat:2}});}
+ else if(type==='discard'){give(s,0,{wood:8,brick:2});give(s,1,{ore:10});s.phase='discard';s.returnPhase='build';s.discardRequired=[5,5,0,0];s.discardLeft=5;}
+ else{card(s,type);if(type==='plenty')give(s,1,{ore:18});}
+ if(!conservation(s))throw Error('Invalid fixture inventory');localStorage.setItem('islands-game-v3',JSON.stringify(s));localStorage.setItem('islands-preferences-v1',JSON.stringify({speed:1900,sound:false,motion:false}));location.href='../dist/';
+});
+</script></html>
