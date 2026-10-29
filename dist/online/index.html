@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#132735">
+<title>卡坦岛 · 好友房间</title>
+<link rel="stylesheet" href="../style.css?v=b92e48e5a687"><link rel="stylesheet" href="../online.css?v=0a3263a60f0f"><script type="module" src="./lobby.js?v=c640663591b0"></script>
+</head>
+<body class="lobby-page">
+<header class="site-header"><a class="brand" href="/" aria-label="返回人机棋桌"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>卡坦岛<small>CATAN</small></span></a><a class="lobby-back" href="/">人机棋桌</a></header>
+<main class="lobby-main">
+  <section id="entry-panel">
+    <p class="lobby-eyebrow">好友联机 · 本地试玩</p><h1>与朋友，同赴一片群岛</h1><p class="lobby-intro">各自选址，交换资源，一起把小村庄建成繁荣之岛。</p>
+    <div class="nickname-field"><label for="nickname">你的名字</label><input id="nickname" maxlength="8" placeholder="取一个岛屿居民的名字" autocomplete="nickname"></div>
+    <section id="resume-options" class="resume-options" aria-label="回到原座位" hidden></section>
+    <div class="lobby-choices">
+      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⌂</span><h2>开一张新棋桌</h2><p>选好人数，邀请朋友入座。</p><label for="room-capacity">对局人数</label><select id="room-capacity"><option value="3">3 人对局</option><option value="4">4 人对局</option></select><label for="room-order">行动顺序</label><select id="room-order"><option value="combined">自由交易与建设</option><option value="separate">先交易，后建设</option></select><button class="primary-button" id="create-room">创建房间</button></section>
+      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⚓</span><h2>加入朋友的群岛</h2><p>输入六位房间码，坐到朋友身旁。</p><label for="room-code">房间码</label><input id="room-code" class="room-code-input" maxlength="6" placeholder="例如 ABC234" autocomplete="off" spellcheck="false"><button class="outline-button" id="join-room">加入房间</button></section>
+    </div>
+    <p class="lobby-note">同一台电脑也能试玩：每个新窗口加入一个座位，刷新后会回到原座位。</p>
+  </section>
+  <section id="room-panel" hidden aria-labelledby="room-heading">
+    <div class="room-heading"><div><p class="lobby-eyebrow">朋友已在海岸等你</p><h1 id="room-heading">等待大家入座</h1></div><span class="connection-state" id="connection-state" role="status">连接中</span></div>
+    <div class="room-code-card"><div><span>房间码</span><strong id="display-code"></strong></div><button id="copy-code" class="outline-button">复制房间码</button></div>
+    <div class="room-seat-list" id="room-seats"></div>
+    <div class="room-invitation"><label for="invite-link">邀请朋友</label><div><input id="invite-link" readonly aria-label="房间邀请链接"><button id="copy-link" class="outline-button">复制链接</button></div><a id="new-player-window" class="try-window-link" target="_blank" rel="noopener">打开新窗口加入试玩</a></div>
+    <p id="room-hint" class="room-hint" aria-live="polite"></p><div class="room-actions"><button id="leave-room" class="text-button">离开房间</button><button id="ready-room" class="outline-button">准备</button><button id="start-room" class="primary-button" hidden>开始对局</button></div>
+    <p class="lobby-note">每个窗口只显示自己的手牌；房主点击开始后，所有窗口会一起进入棋盘。</p>
+  </section>
+  <p class="lobby-error" id="lobby-error" role="alert"></p>
+</main>
+<div id="toast" class="toast" role="status"></div>
+</body></html>
