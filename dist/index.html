@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#132735"><meta name="description" content="卡坦岛：经典海岛策略，原创航海棋盘。自由选址、收集资源、交易与建设，率先达到十分。">
+<title>卡坦岛 CATAN | 开拓、交易、建设</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23132735'/%3E%3Cpath d='M10 40 26 13 42 40Z' fill='%23d9a954'/%3E%3Cpath d='m30 47 11-20 13 20Z' fill='%23b95f39'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./style.css?v=b92e48e5a687"><link rel="stylesheet" href="./online.css?v=0a3263a60f0f"><link rel="stylesheet" href="./layout.css?v=562819ad8db3"><script type="module" src="./app.js?v=71c66700094a"></script>
+</head>
+<body>
+<header class="site-header">
+ <a class="brand" href="./" aria-label="卡坦岛首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>卡坦岛<small>CATAN</small></span></a>
+ <nav aria-label="游戏导航"><span class="nav-current">游戏桌</span><button data-action="tutorial" id="tutorial-trigger">入门教学</button><button data-action="help">玩法指南</button></nav>
+ <div class="header-tools"><span class="practice-label"><i></i>本地人机对战</span><button class="plain-button settings-trigger" data-action="settings" aria-label="游戏设置">设置</button><span class="header-avatar" aria-label="你的角色">我</span></div>
+</header>
+<main class="page">
+ <div class="page-title"><div><p>资源有限，可能无限。</p><h1>从第一座村庄，到繁荣之岛</h1></div><div class="table-actions"><a href="./online/" class="outline-button online-entry">好友联机</a><button class="outline-button" data-action="new"><span aria-hidden="true">＋</span> 新的对局</button></div></div>
+ <div class="game-layout">
+  <div class="game-main">
+   <section class="board-surface" aria-label="群岛棋盘">
+    <div class="board-top"><div class="table-label"><span class="table-mark" aria-hidden="true"></span><div>晨曦群岛<small id="table-mode">基础版 / 4 位玩家</small></div></div><div class="board-top-right"><div class="round-label" id="round-label"></div><button id="quick-turn" class="quick-turn" data-action="turn" hidden></button></div></div>
+    <div id="board" class="board-container"></div><div id="board-hint" class="board-hint" aria-live="polite"></div>
+    <div class="board-bottom"><div class="board-tools"><button data-action="zoom-out" aria-label="缩小棋盘">−</button><button data-action="zoom-reset" id="zoom-value" aria-label="重置棋盘缩放">100%</button><button data-action="zoom-in" aria-label="放大棋盘">＋</button></div></div>
+   </section>
+   <section class="hand-panel" aria-labelledby="hand-heading"><div class="hand-title"><div><h2 id="hand-heading">你的资源<span id="hand-total"></span></h2><p>起始资源来自你选择的第二座村庄。</p></div></div><div id="resources" class="resources"></div><div id="bank-stock" class="bank-stock" aria-label="银行剩余资源"></div><div class="hand-foot"><span id="save-status">进度保存在这台设备上</span><button class="text-button" data-action="costs">建设费用</button></div></section>
+  </div>
+  <aside class="sidebar" aria-label="玩家与回合操作">
+   <section class="players-panel"><div class="section-heading"><h2>岛屿居民</h2><span>目标 10 分</span></div><div id="players"></div><div class="awards-row"><button data-action="awards" id="road-award">最长道路 <b>5+</b></button><button data-action="awards" id="army-award">骑士团 <b>3+</b></button></div></section>
+   <section class="turn-panel"><div id="turn-status"></div><div id="dice" class="dice-tray" aria-label="本回合骰子"></div><button id="quick-dev" class="development-action" data-action="dev" aria-label="购买和使用发展卡"></button><button class="primary-button roll-button" id="turn-button" data-action="turn"></button><div class="build-heading"><h2>建设你的领地</h2><span id="build-tip"></span></div><div id="build-actions" class="build-actions"></div><button class="trade-button" id="trade-trigger" data-action="trade"><span class="trade-icon" aria-hidden="true">⇄</span><span class="trade-label">资源交易</span></button></section>
+   <section class="activity-panel" role="button" tabindex="0" data-action="history" aria-label="航海日志，点击展开完整记录" aria-haspopup="dialog"><div class="section-heading"><h2>航海日志</h2></div><div id="activity" class="activity" aria-live="polite"></div></section>
+  </aside>
+ </div>
+ <footer class="page-footer"><span>每一笔交易，都是下一步的可能。</span><span id="footer-mode">人机对战 / 你 + 3 位 AI</span></footer>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+</body></html>
