@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+.sites-runtime/
+.catan-rooms/
+dist/server/
+dist/.openai/
+.cloud-preview/

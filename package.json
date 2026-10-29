@@ -1,0 +1,18 @@
+{
+  "name": "catan-local",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "dev": "node server/index.js",
+    "start": "node server/index.js",
+    "test:online": "node --test tests/rooms.test.mjs tests/http.test.mjs",
+    "db:generate": "node scripts/generate-migrations.mjs",
+    "build": "node scripts/build-cloud.mjs",
+    "test:cloud": "node --test tests/cloud.test.mjs",
+    "preview:cloud": "npm run build && node server/cloud-preview.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
