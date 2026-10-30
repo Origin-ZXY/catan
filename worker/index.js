@@ -1,5 +1,6 @@
 import {CloudRooms} from './cloud-rooms.js';
 import {RoomError} from '../server/room-core.js';
+import {turnstileConfig,verifyTurnstile} from './turnstile.js';
 
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml'};
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin'};
@@ -10,23 +11,24 @@ async function payload(request){
   try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>16384)throw new RoomError('请求内容过大',413);text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{await reader.cancel().catch(()=>{});}
   try{const result=JSON.parse(text);if(!result||typeof result!=='object'||Array.isArray(result))throw 0;return result;}catch{throw new RoomError('请求内容无效');}
 }
-export function createWorker(assets){
+export function createWorker(assets,{verifyFetch}={}){
   return {async fetch(request,env,ctx){
     const url=new URL(request.url);let api,code,token;
     try{
       if(url.pathname.startsWith('/api/')){
         if(request.headers.get('Origin')&&request.headers.get('Origin')!==url.origin)throw new RoomError('请从游戏页面操作',403);
+        if(request.method==='GET'&&url.pathname==='/api/security')return json(turnstileConfig(env));
         api=new CloudRooms(env.DB);
         if(request.method==='GET'&&url.pathname==='/api/health'){
           await api.db.prepare('SELECT code FROM catan_rooms LIMIT 1').first();return json({ok:true,multiplayer:true,hosted:true,transport:'poll'});
         }
         const ip=request.headers.get('CF-Connecting-IP')??'unknown';
         if(request.method==='POST'&&url.pathname==='/api/rooms'){
-          await api.limit('create',ip,12,3600000);const created=await api.create(await payload(request));ctx?.waitUntil(api.cleanup().catch(()=>{}));return json({ok:true,...created},201);
+          await api.limit('create',ip,12,3600000);const data=await payload(request);await verifyTurnstile(env,data.turnstileToken,ip,verifyFetch);const created=await api.create(data);ctx?.waitUntil(api.cleanup().catch(()=>{}));return json({ok:true,...created},201);
         }
         const match=url.pathname.match(/^\/api\/rooms\/([A-Z2-9]{6})(?:\/(join|commands|presence))?$/i);
         if(!match)throw new RoomError('没有这个接口',404);code=match[1].toUpperCase();const endpoint=match[2];
-        if(request.method==='POST'&&endpoint==='join'){await api.limit('join',ip,40,60000);return json({ok:true,...await api.join(code,await payload(request))},201);}
+        if(request.method==='POST'&&endpoint==='join'){await api.limit('join',ip,40,60000);const data=await payload(request);await verifyTurnstile(env,data.turnstileToken,ip,verifyFetch);return json({ok:true,...await api.join(code,data)},201);}
         token=request.headers.get('Authorization')?.replace(/^Bearer /,'');
         if(!token)throw new RoomError('请先加入房间',401);
         if(request.method==='GET'&&!endpoint)return json({ok:true,snapshot:await api.snapshot(code,token,request.headers.get('X-Room-Connection'))});
