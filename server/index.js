@@ -23,6 +23,7 @@ export function createApp({directory=resolve(projectRoot,'.catan-rooms'),store=n
       if(url.pathname.startsWith('/api/')){
         if(request.headers.origin&&request.headers.origin!==`http://${host}`)throw new RoomError('请从本地游戏页面操作',403);
         if(request.method==='GET'&&url.pathname==='/api/health'){json(response,200,{ok:true,multiplayer:true});return;}
+        if(request.method==='GET'&&url.pathname==='/api/security'){json(response,200,{required:false});return;}
         if(request.method==='POST'&&url.pathname==='/api/rooms'){json(response,201,{ok:true,...store.create(await body(request))});return;}
         const match=url.pathname.match(/^\/api\/rooms\/([A-Z2-9]{6})(?:\/(join|events|commands))?$/i);
         if(!match)throw new RoomError('没有这个接口',404);
