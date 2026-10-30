@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#132735">
 <title>卡坦岛 · 好友房间</title>
-<link rel="stylesheet" href="../style.css?v=b92e48e5a687"><link rel="stylesheet" href="../online.css?v=0a3263a60f0f"><script type="module" src="./lobby.js?v=c640663591b0"></script>
+<link rel="stylesheet" href="../style.css?v=b92e48e5a687"><link rel="stylesheet" href="../online.css?v=18b2ce810795"><script type="module" src="./lobby.js?v=33b7ea86e046"></script>
 </head>
 <body class="lobby-page">
 <header class="site-header"><a class="brand" href="/" aria-label="返回人机棋桌"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>卡坦岛<small>CATAN</small></span></a><a class="lobby-back" href="/">人机棋桌</a></header>
@@ -12,9 +12,10 @@
     <p class="lobby-eyebrow">好友联机 · 本地试玩</p><h1>与朋友，同赴一片群岛</h1><p class="lobby-intro">各自选址，交换资源，一起把小村庄建成繁荣之岛。</p>
     <div class="nickname-field"><label for="nickname">你的名字</label><input id="nickname" maxlength="8" placeholder="取一个岛屿居民的名字" autocomplete="nickname"></div>
     <section id="resume-options" class="resume-options" aria-label="回到原座位" hidden></section>
+    <div class="room-verification"><div id="room-verification-widget"></div><p id="room-verification-status" role="status" aria-live="polite">正在载入人机验证…</p></div>
     <div class="lobby-choices">
-      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⌂</span><h2>开一张新棋桌</h2><p>选好人数，邀请朋友入座。</p><label for="room-capacity">对局人数</label><select id="room-capacity"><option value="3">3 人对局</option><option value="4">4 人对局</option></select><label for="room-order">行动顺序</label><select id="room-order"><option value="combined">自由交易与建设</option><option value="separate">先交易，后建设</option></select><button class="primary-button" id="create-room">创建房间</button></section>
-      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⚓</span><h2>加入朋友的群岛</h2><p>输入六位房间码，坐到朋友身旁。</p><label for="room-code">房间码</label><input id="room-code" class="room-code-input" maxlength="6" placeholder="例如 ABC234" autocomplete="off" spellcheck="false"><button class="outline-button" id="join-room">加入房间</button></section>
+      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⌂</span><h2>开一张新棋桌</h2><p>选好人数，邀请朋友入座。</p><label for="room-capacity">对局人数</label><select id="room-capacity"><option value="3">3 人对局</option><option value="4">4 人对局</option></select><label for="room-order">行动顺序</label><select id="room-order"><option value="combined">自由交易与建设</option><option value="separate">先交易，后建设</option></select><button class="primary-button" id="create-room" disabled>创建房间</button></section>
+      <section class="lobby-choice"><span class="lobby-choice-icon" aria-hidden="true">⚓</span><h2>加入朋友的群岛</h2><p>输入六位房间码，坐到朋友身旁。</p><label for="room-code">房间码</label><input id="room-code" class="room-code-input" maxlength="6" placeholder="例如 ABC234" autocomplete="off" spellcheck="false"><button class="outline-button" id="join-room" disabled>加入房间</button></section>
     </div>
     <p class="lobby-note">同一台电脑也能试玩：每个新窗口加入一个座位，刷新后会回到原座位。</p>
   </section>
