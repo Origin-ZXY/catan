@@ -10,6 +10,8 @@
 
 创建房间后复制邀请链接发给朋友。朋友输入名字加入，所有玩家准备后，由房主开始 3 人或 4 人对局。入口无需注册，房间没有公开列表；邀请链接只带房间码，不包含座位凭证。
 
+在线新建房间和加入新座位需要先完成 Cloudflare Turnstile 真人验证。验证失败、超时或过期时，创建与加入按钮不可用；提交一次后会重新获取验证码。验证令牌只留在页面内存，随本次创建或加入请求提交，不写入浏览器存储或邀请链接。已有座位使用原凭证恢复、刷新、同步局面和对局操作，无须重复验证；验证服务暂时不可用也不影响恢复原座位。
+
 在线对局使用云端共享数据库保存，规则校验、随机事件和隐藏手牌均在服务端执行。各客户端约每秒同步一次；同时提交的操作通过数据库版本比较避免覆盖或重复结算。关闭页面后，同一设备和浏览器可通过邀请链接里的「继续原座位」回到对局。清理浏览器站点数据会移除本设备的座位凭证。房间无操作 7 天后过期。
 
 ## 本地运行
@@ -22,6 +24,8 @@
 输入名字创建 3 人或 4 人房间，通过「打开新窗口加入试玩」打开另外的独立窗口。每个窗口输入自己的名字并加入，所有玩家准备后，房主点击「开始对局」。房主先手，各自选择两组初始村庄与道路。每个标签页标题都会显示玩家名字，便于切换。
 
 本地服务默认只监听本机 `127.0.0.1`，用于本机多窗口试玩；邀请外地朋友时使用上面的在线入口。可通过 `PORT=4174 npm run dev` 改端口。纯静态运行仍可人机对战，但联机需要上述 Node 服务。
+
+本机 Node 服务的 `GET /api/security` 返回 `{ "required": false }`，页面显示「本地联机已就绪」，用于保留多窗口开发流程。这是本机开发模式，不代表完成了线上真人验证。
 
 规则及联机测试：`npm test`。
 
@@ -71,6 +75,7 @@
 - `dist/ports.js`：港口交点几何、木板码头与圆形兑换标牌。
 - `dist/app.js`：交互、AI 调度与本机存档。
 - `dist/room-client.js`：每窗口座位身份、事件流、重连与联机指令。
+- `dist/online-security.js`：Turnstile 异步加载、页面内存令牌和一次性提交状态。
 - `dist/online/` 与 `dist/online.css`：创建房间、加入、准备与邀请界面。
 - `server/room-core.js`：本地和云端共用的房间、权限、私密视角与规则执行。
 - `server/rooms.js`：本地文件存档适配。
@@ -87,6 +92,7 @@
 - `tests/ports.test.mjs`：港口延长线交点、码头朝向和地图边界测试。
 - `tests/rooms.test.mjs` 与 `tests/http.test.mjs`：联机协议、权限、持久化、完整对局与 HTTP 事件流测试。
 - `tests/cloud.test.mjs`、`tests/recovery.test.mjs`：云端并发、真实 SQL、私密状态、整局和座位恢复测试。
+- `tests/online-security.test.mjs`、`tests/turnstile.test.mjs`：验证码加载与失效、单次令牌、本地开发配置和云端验证边界测试。
 - `tests/ui-fixtures.html`：开发用界面状态夹具，不属于发布目录。用项目根目录启动另一个本地端口后打开它，可检查交易和发展卡界面；请勿在常用游戏端口运行以免替换该端口的测试存档。
 
 新版对局存档使用 `islands-game-v3`，入门教学另存为 `catan-tutorial-v1`；旧 `v1` / `v2` 存档保留在浏览器中，新版不会覆盖它们。
@@ -95,4 +101,12 @@
 
 `npm run db:generate` 准备版本化迁移，已应用的迁移保持不变；`npm run build` 生成 `dist/server/index.js` 和发布元数据。`.openai/hosting.json` 保留原 Sites 项目标识，声明 `DB` 绑定。发布通过 Sites 的源码、打包、版本与部署流程完成，平台配置数据库并应用迁移。
 
-`npm run preview:cloud` 在 `http://127.0.0.1:4180/online/` 运行与线上相同的 Worker 构建，使用 Node 内置 SQLite 适配数据库接口。`.cloud-preview/` 和 `.catan-rooms/` 均是私密运行数据目录，不提交、不发布。
+部署前，在 Cloudflare 创建 Turnstile widget，并将允许的主机名设为 `islands-table-zxy.zsj2957310036.chatgpt.site`。在 Sites 部署环境设置以下三项：
+
+- `TURNSTILE_SITE_KEY`：该 widget 的公开 site key，由 `GET /api/security` 提供给前端。
+- `TURNSTILE_SECRET_KEY`：对应的私密 secret key，仅在服务端环境保存，用于请求 Cloudflare Siteverify。不要写入源码、构建产物或前端配置。
+- `TURNSTILE_EXPECTED_HOSTNAME`：`islands-table-zxy.zsj2957310036.chatgpt.site`，服务端精确校验 Siteverify 返回的 hostname；同时校验 action 为 `catan_room`。
+
+云端缺少任一配置时会停止新建和加入房间，不会降级为本地免验证模式。配置后重新发布，使运行中的 Worker 获得环境设置；前端从官方 SDK 的异步回调取得令牌，服务端再向 Siteverify 校验。配置方式参见 [Cloudflare Turnstile 官方文档](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)。已有座位的恢复接口继续使用座位凭证，不要求验证码。
+
+`npm run preview:cloud` 在 `http://127.0.0.1:4180/online/` 运行与线上相同的 Worker 构建，使用 Node 内置 SQLite 适配数据库接口。该预览不会注入 Turnstile 密钥，新建或加入会显示验证尚未配置；本机多窗口完整试玩使用 `npm run dev`。`.cloud-preview/` 和 `.catan-rooms/` 均是私密运行数据目录，不提交、不发布。
