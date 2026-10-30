@@ -8,8 +8,8 @@ function collect(folder){for(const item of readdirSync(folder,{withFileTypes:tru
 }}
 collect(root);
 function module(file,name,bindings=''){
-  let source=readFileSync(file,'utf8');const names=[...source.matchAll(/export\s+(?:const|function|class)\s+(\w+)/g)].map(m=>m[1]);
-  source=source.replace(/^import[^\n]*\n/gm,'').replace(/\bexport\s+(?=(?:const|function|class)\b)/g,'');
+  let source=readFileSync(file,'utf8');const names=[...source.matchAll(/export\s+(?:const|(?:async\s+)?function|class)\s+(\w+)/g)].map(m=>m[1]);
+  source=source.replace(/^import[^\n]*\n/gm,'').replace(/\bexport\s+(?=(?:const|(?:async\s+)?function|class)\b)/g,'');
   return `const ${name}=(()=>{${bindings}\n${source}\nreturn {${names.join(',')}};})();\n`;
 }
 const gameNames=[...readFileSync('dist/game.js','utf8').matchAll(/export\s+(?:const|function|class)\s+(\w+)/g)].map(m=>m[1]);
@@ -17,7 +17,8 @@ let output='// Generated single-module Sites Worker. Rebuild with npm run build.
 output+=module('dist/game.js','Rules');
 output+=module('server/room-core.js','Authority',`const {${gameNames.join(',')}}=Rules;`);
 output+=module('worker/cloud-rooms.js','Cloud','const {RoomStore,RoomError}=Authority;');
-output+=module('worker/index.js','Runtime','const {CloudRooms}=Cloud;const {RoomError}=Authority;');
+output+=module('worker/turnstile.js','Verification','const {RoomError}=Authority;');
+output+=module('worker/index.js','Runtime','const {CloudRooms}=Cloud;const {RoomError}=Authority;const {turnstileConfig,verifyTurnstile}=Verification;');
 output+=`const assets=${JSON.stringify(assets)};\nexport default Runtime.createWorker(assets);\n`;
 mkdirSync('dist/server',{recursive:true});mkdirSync('dist/.openai',{recursive:true});
 writeFileSync('dist/server/index.js',output);copyFileSync('.openai/hosting.json','dist/.openai/hosting.json');
