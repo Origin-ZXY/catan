@@ -17,5 +17,6 @@
 .online-game .online-entry{display:none}
 .lobby-main{padding-top:32px;padding-bottom:24px}
 .resume-options{padding:16px;margin:0 0 20px;background:#233740;border:1px solid #8e8056;border-radius:10px}.resume-options p{font-size:12px;color:var(--muted);margin-bottom:10px}.resume-options>div{display:flex;gap:9px;flex-wrap:wrap}.resume-options button{padding:9px 12px;font-size:12px;border:1px solid #a58b50;border-radius:6px;color:var(--gold)}
+.room-verification{max-width:360px;margin:0 0 20px}.room-verification p{font-size:12px;line-height:1.8;color:var(--muted);margin-top:8px}.room-verification>div:empty+p{margin-top:0}
 @media(min-width:800px){.room-seat-list[data-capacity="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}.room-seat-list[data-capacity="3"] .room-seat{padding:12px 10px;gap:8px}.room-seat-list[data-capacity="3"] .room-seat>.avatar{width:30px;height:30px}.room-seat-list[data-capacity="3"] .room-seat strong{font-size:13px}}
 @media(min-width:800px) and (max-height:800px){.lobby-main{padding-top:24px;padding-bottom:18px}.room-code-card{padding:14px 20px;margin-top:20px;margin-bottom:14px}.room-code-card strong{font-size:27px}.room-seat{min-height:72px}.room-invitation{margin-top:14px}.room-hint{margin-top:16px}.lobby-note{margin-top:16px}.room-heading h1{font-size:26px}}
